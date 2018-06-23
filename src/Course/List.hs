@@ -209,9 +209,15 @@ flattenAgain = flatMap id
 --
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
+
+isOptional :: Optional a -> Bool
+isOptional Empty = True
+isOptional _ = False
+
 seqOptional :: List (Optional a) -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
+seqOptional loa = case filter isOptional loa of
+  Nil -> Full $ flatMap (\(Full a) -> (a :. Nil)) loa
+  _ -> Empty
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -230,8 +236,9 @@ seqOptional =
 -- >>> find (const True) infinity
 -- Full 0
 find :: (a -> Bool) -> List a -> Optional a
-find =
-  error "todo: Course.List#find"
+find f la = case filter f la of
+  Nil -> Empty
+  (a :. _) -> Full a
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -300,7 +307,7 @@ hlist =
   foldRight (:) []
 
 listh :: [a] -> List a
-listh = P.foldr :. Nil
+listh = P.foldr (:.) Nil
 
 putStr :: Chars -> IO ()
 putStr = P.putStr . hlist
