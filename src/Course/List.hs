@@ -236,9 +236,10 @@ seqOptional loa = case filter isOptional loa of
 -- >>> find (const True) infinity
 -- Full 0
 find :: (a -> Bool) -> List a -> Optional a
-find f la = case filter f la of
-  Nil -> Empty
-  (a :. _) -> Full a
+find f la =
+  case filter f la of
+    Nil -> Empty
+    (a :. _) -> Full a
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -255,7 +256,12 @@ find f la = case filter f la of
 -- True
 lengthGT4 :: List a -> Bool
 lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+  let go n Nil = n >= 4
+      go n (_ :. as) =
+        if n < 4
+          then go (n + 1) as
+          else True
+  in go 0
 
 -- | Reverse a list.
 --
@@ -269,8 +275,9 @@ lengthGT4 =
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
 reverse :: List a -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldRight (:.) Nil
+-- TODO: did not pass the property test
+-- reverse then append is same as append then reverse: FAIL
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
