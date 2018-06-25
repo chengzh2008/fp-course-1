@@ -1,16 +1,16 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE InstanceSigs        #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE RebindableSyntax    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE RebindableSyntax #-}
 
 module Course.Applicative where
 
-import Course.Core
-import Course.ExactlyOne
-import Course.Functor
-import Course.List
-import Course.Optional
-import qualified Prelude as P(fmap, return, (>>=))
+import           Course.Core
+import           Course.ExactlyOne
+import           Course.Functor
+import           Course.List
+import           Course.Optional
+import qualified Prelude           as P (fmap, return, (>>=))
 
 -- | All instances of the `Applicative` type-class must satisfy three laws.
 -- These laws are not checked by the compiler. These laws are given as:
@@ -56,8 +56,8 @@ instance Applicative List where
   pure :: a -> List a
   pure a = a :. Nil
   (<*>) :: List (a -> b) -> List a -> List b
-  (<*>) Nil _ = Nil
-  (<*>) _ Nil = Nil
+  (<*>) Nil _          = Nil
+  (<*>) _ Nil          = Nil
   (<*>) (fa :. fas) as = (fa <$> as) ++ (fas <*> as)
 
 -- | Insert into an Optional.
@@ -76,7 +76,7 @@ instance Applicative Optional where
   pure :: a -> Optional a
   pure = Full
   (<*>) :: Optional (a -> b) -> Optional a -> Optional b
-  (<*>) Empty _ = Empty
+  (<*>) Empty _     = Empty
   (<*>) (Full f) fa = f <$> fa
 
 -- | Insert into a constant function.
@@ -101,8 +101,8 @@ instance Applicative ((->) t) where
   pure :: a -> ((->) t a)
   pure = const
   (<*>) :: ((->) t (a -> b)) -> ((->) t a) -> ((->) t b)
-  (<*>) = error "todo: Course.Apply (<*>)#instance ((->) t)"
-
+  (<*>) tab ta = \t -> let f = tab t
+                        in P.fmap f ta $ t
 
 -- | Apply a binary function in the environment.
 --

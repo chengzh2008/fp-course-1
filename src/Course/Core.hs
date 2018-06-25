@@ -1,6 +1,6 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE RebindableSyntax    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE RebindableSyntax #-}
 
 module Course.Core(
   Eq(..)
@@ -47,21 +47,22 @@ module Course.Core(
 ) where
 
 
-import Prelude
-       (Bool(..), Char, Either(..), Eq(..), Fractional(..), IO, Int,
-        Integer, Integral(..), Num(..), Ord(..), Rational, RealFrac(..),
-        Show(..), ($), (&&), (.), (||), const, curry, error, even, flip,
-        fst, id, not, odd, otherwise, seq, snd, uncurry, undefined)
-import Data.String (IsString(..))
-import System.IO (getChar)
-import Data.Function (on)
-import Control.Arrow ((&&&), (***), first, second)
-import Data.Char
+import           Control.Arrow (first, second, (&&&), (***))
+import           Data.Char
+import           Data.Function (on)
+import           Data.String   (IsString (..))
+import           Prelude       (Bool (..), Char, Either (..), Eq (..),
+                                Fractional (..), IO, Int, Integer,
+                                Integral (..), Num (..), Ord (..), Rational,
+                                RealFrac (..), Show (..), const, curry, error,
+                                even, flip, fst, id, not, odd, otherwise, seq,
+                                snd, uncurry, undefined, ($), (&&), (.), (||))
+import           System.IO     (getChar)
 
 ifThenElse :: Bool -> a -> a -> a
-ifThenElse True t _ = t
+ifThenElse True t _  = t
 ifThenElse False _ f = f
 
 bool :: a -> a -> Bool -> a
 bool f _ False = f
-bool _ t True = t
+bool _ t True  = t

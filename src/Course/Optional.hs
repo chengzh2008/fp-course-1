@@ -1,12 +1,12 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Course.Optional where
 
 import qualified Control.Applicative as A
-import qualified Control.Monad as M
-import Course.Core
-import qualified Prelude as P
+import qualified Control.Monad       as M
+import           Course.Core
+import qualified Prelude             as P
 
 -- | The `Optional` data type contains 0 or 1 value.
 --
@@ -37,7 +37,7 @@ mapOptional = P.fmap
 -- >>> bindOptional (\n -> if even n then Full (n - 1) else Full (n + 1)) (Full 9)
 -- Full 10
 bindOptional :: (a -> Optional b) -> Optional a -> Optional b
-bindOptional _ Empty = Empty
+bindOptional _ Empty    = Empty
 bindOptional f (Full a) = f a
 
 -- | Return the possible value if it exists; otherwise, the second argument.
@@ -49,7 +49,7 @@ bindOptional f (Full a) = f a
 -- 99
 (??) :: Optional a -> a -> a
 (??) (Full a) _ = a
-(??) Empty a = a
+(??) Empty a    = a
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
 -- use the second value.
@@ -66,7 +66,7 @@ bindOptional f (Full a) = f a
 -- >>> Empty <+> Empty
 -- Empty
 (<+>) :: Optional a -> Optional a -> Optional a
-(<+>) Empty b = b
+(<+>) Empty b      = b
 (<+>) a@(Full _) _ = a
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b
@@ -76,7 +76,7 @@ twiceOptional :: (a -> b -> c) -> Optional a -> Optional b -> Optional c
 twiceOptional f = applyOptional . mapOptional f
 
 contains :: Eq a => a -> Optional a -> Bool
-contains _ Empty = False
+contains _ Empty    = False
 contains a (Full z) = a == z
 
 instance P.Functor Optional where

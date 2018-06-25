@@ -1,7 +1,7 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 -- + Complete the 10 exercises below by filling out the function bodies.
 --   Replace the function bodies (error "todo: ...") with an appropriate
@@ -14,12 +14,12 @@
 module Course.List where
 
 import qualified Control.Applicative as A
-import qualified Control.Monad as M
-import Course.Core
-import Course.Optional
-import qualified System.Environment as E
-import qualified Prelude as P
-import qualified Numeric as N
+import qualified Control.Monad       as M
+import           Course.Core
+import           Course.Optional
+import qualified Numeric             as N
+import qualified Prelude             as P
+import qualified System.Environment  as E
 
 
 -- $setup
@@ -50,7 +50,7 @@ infinity =
 
 -- functions over List that you may consider using
 foldRight :: (a -> b -> b) -> b -> List a -> b
-foldRight _ b Nil = b
+foldRight _ b Nil      = b
 foldRight f b (h :. t) = f h (foldRight f b t)
 
 foldLeft :: (b -> a -> b) -> b -> List a -> b
@@ -72,7 +72,7 @@ foldLeft f b (h :. t) = let b' = f b h in b' `seq` foldLeft f b' t
 --
 -- prop> \x -> x `headOr` Nil == x
 headOr :: a -> List a -> a
-headOr a Nil = a
+headOr a Nil      = a
 headOr _ (x :. _) = x
 
 
@@ -119,7 +119,7 @@ length = foldRight (\_ b -> b + 1) 0
 --
 -- prop> \x -> map id x == x
 map :: (a -> b) -> List a -> List b
-map _ Nil = Nil
+map _ Nil       = Nil
 map f (a :. as) = f a :. map f as
 
 -- | Return elements satisfying the given predicate.
@@ -133,7 +133,7 @@ map f (a :. as) = f a :. map f as
 --
 -- prop> \x -> filter (const False) x == Nil
 filter :: (a -> Bool) -> List a -> List a
-filter _ Nil = Nil
+filter _ Nil       = Nil
 filter f (a :. as) = if f a then a :. filter f as else filter f as
 
 -- | Append two lists to a new list.
@@ -149,7 +149,7 @@ filter f (a :. as) = if f a then a :. filter f as else filter f as
 --
 -- prop> \x -> x ++ Nil == x
 (++) :: List a -> List a -> List a
-(++) Nil b = b
+(++) Nil b       = b
 (++) (a :. as) b = a :. as ++ b
 
 infixr 5 ++
@@ -189,7 +189,7 @@ flattenAgain = flatMap id
 
 -- | Convert a list of optional values to an optional list of values.
 --
--- * If the list contains all `Full` values, 
+-- * If the list contains all `Full` values,
 -- then return `Full` list of values.
 --
 -- * If the list contains one or more `Empty` values,
@@ -212,12 +212,12 @@ flattenAgain = flatMap id
 
 isOptional :: Optional a -> Bool
 isOptional Empty = True
-isOptional _ = False
+isOptional _     = False
 
 seqOptional :: List (Optional a) -> Optional (List a)
 seqOptional loa = case filter isOptional loa of
   Nil -> Full $ flatMap (\(Full a) -> (a :. Nil)) loa
-  _ -> Empty
+  _   -> Empty
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -238,7 +238,7 @@ seqOptional loa = case filter isOptional loa of
 find :: (a -> Bool) -> List a -> Optional a
 find f la =
   case filter f la of
-    Nil -> Empty
+    Nil      -> Empty
     (a :. _) -> Full a
 
 -- | Determine if the length of the given list is greater than 4.
@@ -338,12 +338,12 @@ getArgs :: IO (List Chars)
 getArgs = P.fmap (listh . P.fmap listh) E.getArgs
 
 isPrefixOf :: Eq a => List a -> List a -> Bool
-isPrefixOf Nil _ = True
-isPrefixOf _ Nil = False
+isPrefixOf Nil _               = True
+isPrefixOf _ Nil               = False
 isPrefixOf (x :. xs) (y :. ys) = x == y && isPrefixOf xs ys
 
 isEmpty :: List a -> Bool
-isEmpty Nil = True
+isEmpty Nil      = True
 isEmpty (_ :. _) = False
 
 span :: (a -> Bool) -> List a -> (List a, List a)
@@ -371,13 +371,13 @@ zip = zipWith (,)
 
 zipWith :: (a -> b -> c) -> List a -> List b -> List c
 zipWith f (a :. as) (b :. bs) = f a b :. zipWith f as bs
-zipWith _ _ _ = Nil
+zipWith _ _ _                 = Nil
 
 unfoldr :: (a -> Optional (b, a)) -> a -> List b
 unfoldr f b =
   case f b of
     Full (a, z) -> a :. unfoldr f z
-    Empty -> Nil
+    Empty       -> Nil
 
 lines :: Chars -> List Chars
 lines = listh . P.fmap listh . P.lines . hlist
@@ -396,7 +396,7 @@ listOptional _ Nil = Nil
 listOptional f (h :. t) =
   let r = listOptional f t
   in case f h of
-       Empty -> r
+       Empty  -> r
        Full q -> q :. r
 
 any :: (a -> Bool) -> List a -> Bool
@@ -455,7 +455,7 @@ replicate n x = take n (repeat x)
 reads :: P.Read a => Chars -> Optional (a, Chars)
 reads s =
   case P.reads (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 read :: P.Read a => Chars -> Optional a
@@ -464,7 +464,7 @@ read = mapOptional fst . reads
 readHexs :: (Eq a, Num a) => Chars -> Optional (a, Chars)
 readHexs s =
   case N.readHex (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 readHex :: (Eq a, Num a) => Chars -> Optional a
@@ -473,7 +473,7 @@ readHex = mapOptional fst . readHexs
 readFloats :: (RealFrac a) => Chars -> Optional (a, Chars)
 readFloats s =
   case N.readSigned N.readFloat (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 readFloat :: (RealFrac a) => Chars -> Optional a
