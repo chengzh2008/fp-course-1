@@ -9,7 +9,7 @@ import           Test.Tasty.HUnit  (testCase, (@?=))
 import           Course.Core
 import           Course.ExactlyOne (ExactlyOne (..))
 import           Course.List       (List (..))
-import           Course.Monad      (join, (<**>), (=<<), (>>=), (<=<))
+import           Course.Monad      (join, (<**>), (<=<), (=<<), (>>=))
 import           Course.Optional   (Optional (..))
 
 test_Monad :: TestTree
