@@ -56,7 +56,9 @@ foldRight f b (h :. t) = f h (foldRight f b t)
 foldLeft :: (b -> a -> b) -> b -> List a -> b
 foldLeft _ b Nil      = b
 -- force b' to evaluate first before the recursive call
-foldLeft f b (h :. t) = let b' = f b h in b' `seq` foldLeft f b' t
+foldLeft f b (h :. t) =
+  let b' = f b h
+  in b' `seq` foldLeft f b' t
 
 -- END Helper functions and data types
 
@@ -275,8 +277,7 @@ lengthGT4 =
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
 reverse :: List a -> List a
-reverse = foldRight (:.) Nil
--- TODO: did not pass the property test
+reverse = foldLeft (flip (:.)) Nil
 -- reverse then append is same as append then reverse: FAIL
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
@@ -412,7 +413,7 @@ and :: List Bool -> Bool
 and = all id
 
 elem :: Eq a => a -> List a -> Bool
-elem x = any (== x)
+elem = (any . (==))
 
 notElem :: Eq a => a -> List a -> Bool
 notElem x = all (/= x)
